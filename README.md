@@ -4,15 +4,16 @@
 This project is a Python Tkinter application that gives users a simple and interactive way to book movie tickets. It lets users pick a movie, choose a showtime, and select seats from a visual seating grid. Seats that are already booked are clearly marked and cannot be selected, while available seats can be clicked to toggle selection. After the user chooses their seats, the app calculates the total price, shows a confirmation message, and saves the booking details. 
 
 ## Features 
--Movie Selection: The user will be able to select a movie from a dropdown list of available movies.
+-Movie Selection: The user will be able to select a movie from a dropdown 
+list of available movies.
 -Selection by Showtime: Several show times pop up, with options based on radio buttons.
 -Interactive Seat Layout: The seats are in grid format, where the available, selected, and booked seats are represented with different colours.
 -Seat validation ensures users cannot select seats which are already booked.
 -Real-time Seat Highlighting: Clicking a seat toggles its selection status visually.
--Price Calculation: Automatically calculates the total cost based on the number of selected seats.
--Booking Confirmation: Pops-up a confirmation window displaying the booking summary.
--Booking Log: Saves details of each booking into a log file, booking_log.txt, along with the timestamp.
--User-Friendly Interface: Dark-themed, clean, intuitive GUI created using Tkinter
+- Price Calculation: Automatically calculates the total cost based on the number of selected seats.
+- Booking Confirmation: Pops-up a confirmation window displaying the booking summary.
+- Booking Log: Saves details of each booking into a log file, booking_log.txt, along with the timestamp.
+- User-Friendly Interface: Dark-themed, clean, intuitive GUI created using Tkinter
 
 ## Technologies/Tools used
 -Python 3.8
