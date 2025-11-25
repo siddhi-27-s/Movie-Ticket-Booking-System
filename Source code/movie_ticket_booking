@@ -1,0 +1,157 @@
+# MODULE 1: CONFIG
+import tkinter as tk
+from tkinter import ttk, messagebox
+import datetime
+
+BACKGROUND = "#121212"
+CARD = "#1f1f1f"
+HIGHLIGHT = "#ff4f6d"
+UNSELECTED = "#444444"
+BOOKED = "#b54747"
+WHITE = "#ffffff"
+GREY = "#c8c8c8"
+PRICE = 10
+
+# MODULE 2: LOGGER 
+def log_event(text):
+    with open("booking_log.txt", "a") as log:
+        log.write(f"[{datetime.datetime.now()}] {text}\n")
+
+# MODULE 3: DATA MODEL
+MOVIES = ["Avatar 3", "Interstellar", "Homebound", "Deadpool 3"]
+TIMES = ["09:00 AM", "01:15 PM", "04:00 PM", "10:00 PM"]
+BOOKED_SEATS = {"A3", "A4", "C5", "D2"}
+
+# MODULE 4: APP INIT 
+class BookingApp:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Movie Ticket Booking System")
+        self.root.geometry("900x650")
+        self.root.config(bg=BACKGROUND)
+
+        self.movie = tk.StringVar()
+        self.time = tk.StringVar()
+        self.selected = []
+        self.buttons = {}
+
+        self.build_header()
+        self.build_input_section()
+        self.build_seat_section()
+        self.build_book_button()
+
+    def build_header(self):
+        tk.Label(self.root, text="🎬 Movie Ticket Booking",
+                 bg=BACKGROUND, fg=WHITE,
+                 font=("Segoe UI", 26, "bold")).pack(pady=20)
+
+# MODULE 5: INPUT UI
+    def build_input_section(self):
+        frame = tk.Frame(self.root, bg=BACKGROUND)
+        frame.pack(pady=10)
+
+        movie_card = tk.Frame(frame, bg=CARD, padx=20, pady=20)
+        movie_card.grid(row=0, column=0, padx=15)
+
+        tk.Label(movie_card, text="Select Movie",
+                 bg=CARD, fg=WHITE, font=("Segoe UI", 16, "bold")).pack(pady=10)
+
+        dropdown = ttk.Combobox(movie_card, values=MOVIES,
+                                textvariable=self.movie, state="readonly")
+        dropdown.pack()
+        dropdown.current(0)
+
+        time_card = tk.Frame(frame, bg=CARD, padx=20, pady=20)
+        time_card.grid(row=0, column=1, padx=15)
+
+        tk.Label(time_card, text="Select Time",
+                 bg=CARD, fg=WHITE, font=("Segoe UI", 16, "bold")).pack(pady=10)
+
+        self.time.set(TIMES[0])
+        for t in TIMES:
+            tk.Radiobutton(time_card, text=t, value=t,
+                           variable=self.time, bg=CARD, fg=GREY,
+                           selectcolor=CARD).pack(anchor="w")
+
+# MODULE 6: SEAT SECTION 
+    def build_seat_section(self):
+        card = tk.Frame(self.root, bg=CARD, padx=15, pady=15)
+        card.pack(pady=15, fill="both", expand=True)
+
+        tk.Label(card, text="Select Seats",
+                 bg=CARD, fg=WHITE,
+                 font=("Segoe UI", 16, "bold")).pack(pady=10)
+
+        self.seat_frame = tk.Frame(card, bg=CARD)
+        self.seat_frame.pack()
+
+        self.build_seat_grid()
+
+    def build_seat_grid(self):
+        rows = "ABCDEF"
+        cols = 10
+
+        for r, row in enumerate(rows):
+            for c in range(1, cols+1):
+                seat = f"{row}{c}"
+
+                if seat in BOOKED_SEATS:
+                    bg = BOOKED
+                    state = "disabled"
+                    cmd = None
+                else:
+                    bg = UNSELECTED
+                    state = "normal"
+                    cmd = lambda s=seat: self.toggle_seat(s)
+
+                btn = tk.Button(self.seat_frame, text=seat, bg=bg,
+                                fg="white", width=4, height=1,
+                                state=state, relief="flat",
+                                command=cmd)
+
+                btn.grid(row=r, column=c, padx=6, pady=6)
+                self.buttons[seat] = btn
+
+    def toggle_seat(self, seat):
+        if seat in BOOKED_SEATS:
+            messagebox.showerror("Unavailable", f"Seat {seat} is already booked.")
+            return
+
+        if seat in self.selected:
+            self.selected.remove(seat)
+            self.buttons[seat].config(bg=UNSELECTED)
+        else:
+            self.selected.append(seat)
+            self.buttons[seat].config(bg=HIGHLIGHT)
+
+# MODULE 7: BOOKING
+    def build_book_button(self):
+        tk.Button(self.root, text="Book Tickets", bg=HIGHLIGHT,
+                  fg="white", font=("Segoe UI", 16, "bold"),
+                  relief="flat", padx=20, pady=10,
+                  command=self.book).pack(pady=10)
+
+    def validate(self):
+        if not self.selected:
+            messagebox.showwarning("Error", "Select at least one seat.")
+            return False
+        return True
+
+    def book(self):
+        if not self.validate():
+            return
+
+        total = len(self.selected) * PRICE
+
+        summary = (
+            f"Movie: {self.movie.get()}\n"
+            f"Time: {self.time.get()}\n"
+            f"Seats: {', '.join(self.selected)}\n"
+            f"Total Price: ${total}"
+        )
+
+        log_event(summary)
+        messagebox.showinfo("Booking Confirmed", summary)
+
+# RUN APP
+BookingApp().root.mainloop()
